@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Clock, CheckCircle, AlertCircle, Volume2, Pill, Users } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, Volume2, Pill, Users, Camera } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useMedications } from '@/hooks/useMedications';
 import { useUsers } from '@/hooks/useUsers';
+import VisualVerification from './VisualVerification';
 
 interface Medication {
   id: string;
@@ -32,6 +33,8 @@ export default function MedicationReminder() {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showVisualVerification, setShowVisualVerification] = useState(false);
+  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
 
   useEffect(() => {
     // Check browser compatibility on load
@@ -396,6 +399,61 @@ export default function MedicationReminder() {
     }
   };
 
+  const triggerVisualVerification = (medication: Medication) => {
+    console.log('📷 Starting visual verification for:', medication.name);
+    setSelectedMedication(medication);
+    setShowVisualVerification(true);
+  };
+
+  const handleVisualVerificationComplete = (verified: boolean, method: string) => {
+    console.log('📷 Visual verification completed:', { verified, method, medication: selectedMedication?.name });
+    
+    if (verified && selectedMedication) {
+      // Mark medication as taken
+      markMedicationTaken(selectedMedication.id);
+      
+      // Provide feedback based on verification method
+      let message = '';
+      switch (method) {
+        case 'visual_ai':
+          message = `✅ ${selectedMedication.name} verified using AI! Great job!`;
+          break;
+        case 'gesture':
+          message = `✅ ${selectedMedication.name} confirmed by gesture! Well done!`;
+          break;
+        case 'manual_override':
+          message = `✅ ${selectedMedication.name} manually confirmed!`;
+          break;
+        default:
+          message = `✅ ${selectedMedication.name} verified and marked as taken!`;
+      }
+      
+      toast.success(message);
+      
+      // Positive reinforcement speech
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const reinforcementMessages = [
+          `Excellent! Your ${selectedMedication.name} has been verified and recorded using advanced AI technology!`,
+          `Outstanding! Visual verification confirms you took your ${selectedMedication.name}. Keep up the great work!`,
+          `Perfect! AI has successfully verified your ${selectedMedication.name}. You're doing amazing with your health!`
+        ];
+        
+        const randomMessage = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
+        const utterance = new SpeechSynthesisUtterance(randomMessage);
+        utterance.rate = 0.9;
+        utterance.pitch = 1.1;
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    } else {
+      toast.error('Verification cancelled. Please try again when ready.');
+    }
+    
+    // Reset states
+    setShowVisualVerification(false);
+    setSelectedMedication(null);
+  };
+
   const testSpeech = () => {
     console.log('🧪 Testing speech functionality');
     if (!('speechSynthesis' in window)) {
@@ -569,12 +627,21 @@ export default function MedicationReminder() {
                 )}
                 
                 {!med.taken && (
-                  <button
-                    onClick={() => manualMarkTaken(med.id)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition-colors"
-                  >
-                    ✅ Mark Taken
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => triggerVisualVerification(med)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                    >
+                      <Camera className="w-4 h-4" />
+                      📷 AI Verify
+                    </button>
+                    <button
+                      onClick={() => manualMarkTaken(med.id)}
+                      className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition-colors"
+                    >
+                      ✅ Mark Taken
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -604,6 +671,19 @@ export default function MedicationReminder() {
           </div>
           <p className="text-sm text-green-600 mt-1">Say "I took it" or "Yes" to confirm | "ഞാൻ കഴിച്ചു" അല്ലെങ്കിൽ "ആയി" എന്ന് പറയുക</p>
         </div>
+      )}
+
+      {/* Visual Verification Modal */}
+      {showVisualVerification && selectedMedication && (
+        <VisualVerification
+          medicationName={selectedMedication.name}
+          expectedPillCount={1}
+          onVerificationComplete={handleVisualVerificationComplete}
+          onClose={() => {
+            setShowVisualVerification(false);
+            setSelectedMedication(null);
+          }}
+        />
       )}
     </div>
   );

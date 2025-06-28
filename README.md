@@ -17,6 +17,8 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 ### 🔔 Medication Management
 - **Smart Reminders**: Scheduled voice-based medication reminders with visual cues
 - **Voice Confirmation**: Speech recognition for medication confirmation ("I took it" or "Yes")
+- **AI Visual Verification**: Camera-based pill verification using computer vision technology
+- **Gesture Recognition**: Hand gesture confirmation (thumbs up, OK hand) for medication intake
 - **Persistent Alerts**: Repeated reminders until user responds or confirms
 - **Special Instructions**: Support for medication-specific instructions (before/after food, with water, etc.)
 - **Family Notifications**: Automatic alerts to family members if medications are missed
@@ -44,6 +46,15 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 - **Cultural Adaptation**: UI and interactions adapted for Indian senior citizens
 - **Script Support**: Full Unicode support for Malayalam text
 
+### 🔍 AI Visual Verification
+- **Camera Integration**: Real-time video feed for pill verification
+- **Pill Detection**: AI-powered identification of pill count, shape, and color
+- **Gesture Recognition**: Hand gesture detection for confirmation (👍 👌)
+- **Confidence Scoring**: AI confidence levels for verification accuracy
+- **Dual Verification Modes**: Switch between pill detection and gesture recognition
+- **Advanced Confirmation**: Multi-modal verification combining AI, gestures, and manual override
+- **Progress Tracking**: Real-time analysis progress with visual feedback
+
 ### 📱 Senior-Friendly Interface
 - **Large Text & Buttons**: Easy-to-read fonts and touch targets
 - **High Contrast**: Optimized colors for better visibility
@@ -69,6 +80,13 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 - **Google Generative AI (Gemini)** - Advanced language model integration
 - **Web Speech API** - Browser-native speech recognition and synthesis
 - **Custom Speech Processing** - Language detection and processing
+
+### Computer Vision & Camera
+- **MediaDevices API** - Real-time camera access and video streaming
+- **Canvas API** - Image processing and frame capture
+- **AI Image Analysis** - Simulated computer vision for pill detection
+- **Gesture Recognition** - Hand tracking and gesture identification
+- **Real-time Processing** - Live video analysis with progress feedback
 
 ### UI & UX
 - **react-hot-toast** - Beautiful toast notifications
@@ -183,9 +201,11 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 
 ### For Seniors
 1. **Taking Medications**: Respond to voice reminders with "I took it" or "Yes"
-2. **Voice Queries**: Ask "Did I take my morning pills?" or "What medications do I need?"
-3. **Emergency Help**: Say "I'm not feeling well" or tap emergency buttons
-4. **Language**: Speak in English or Malayalam - the app auto-detects
+2. **Visual Verification**: Use the "📷 AI Verify" button to verify pills with camera
+3. **Gesture Confirmation**: Show thumbs up (👍) or OK hand (👌) to confirm medication
+4. **Voice Queries**: Ask "Did I take my morning pills?" or "What medications do I need?"
+5. **Emergency Help**: Say "I'm not feeling well" or tap emergency buttons
+6. **Language**: Speak in English or Malayalam - the app auto-detects
 
 ### For Family Members
 1. **Setup**: Add senior profiles and medications
@@ -219,11 +239,13 @@ For support, email support@edenseniorapp.com or open an issue on GitHub.
 ## 🗺️ Roadmap
 
 - [ ] iOS/Android native apps
-- [ ] Advanced health monitoring
+- [ ] Real TensorFlow.js integration for pill recognition
+- [ ] Advanced health monitoring with vitals tracking
 - [ ] Integration with smart home devices
-- [ ] Multi-language expansion
-- [ ] Wearable device support
-- [ ] Telemedicine integration
+- [ ] Multi-language expansion beyond English/Malayalam
+- [ ] Wearable device support with health sensors
+- [ ] Telemedicine integration with video calls
+- [ ] Machine learning for personalized medication patterns
 
 ---
 
