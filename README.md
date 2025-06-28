@@ -1,4 +1,4 @@
-# 🏥 Eden Senior Health App
+# 🏥 CareLoop
 
 A comprehensive health management application designed specifically for senior citizens, featuring voice-activated medication reminders, AI-powered health assistance, and emergency alert systems.
 
@@ -10,7 +10,7 @@ A comprehensive health management application designed specifically for senior c
 
 ## 🎯 Purpose
 
-Eden Senior Health App is designed to empower senior citizens with technology that enhances their health management and safety. The app provides intuitive, voice-controlled interfaces that make medication management and health monitoring accessible for seniors.
+CareLoop is designed to empower senior citizens with technology that enhances their health management and safety. The app provides intuitive, voice-controlled interfaces that make medication management and health monitoring accessible for seniors.
 
 ## ✨ Key Features
 
@@ -111,8 +111,8 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/udhayk7/seniorapp.git
-   cd seniorapp
+   git clone https://github.com/udhayk7/careloop.git
+   cd careloop
    ```
 
 2. **Install dependencies**
@@ -236,7 +236,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email support@edenseniorapp.com or open an issue on GitHub.
+For support, email support@careloop.com or open an issue on GitHub.
 
 ## 🗺️ Roadmap
 

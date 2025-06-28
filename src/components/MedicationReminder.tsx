@@ -35,21 +35,42 @@ export default function MedicationReminder() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showVisualVerification, setShowVisualVerification] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
+  const [browserCapabilities, setBrowserCapabilities] = useState<{
+    speechSynthesis: boolean;
+    speechRecognition: boolean;
+    mounted: boolean;
+  }>({
+    speechSynthesis: false,
+    speechRecognition: false,
+    mounted: false
+  });
 
   useEffect(() => {
-    // Check browser compatibility on load
+    // Check browser capabilities after mounting to prevent hydration mismatch
     if (typeof window !== 'undefined') {
+      const speechSynthesis = 'speechSynthesis' in window;
+      const speechRecognition = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+      
+      setBrowserCapabilities({
+        speechSynthesis,
+        speechRecognition,
+        mounted: true
+      });
+      
       console.log('🌐 Browser compatibility check:');
-      console.log('- speechSynthesis:', 'speechSynthesis' in window ? '✅' : '❌');
+      console.log('- speechSynthesis:', speechSynthesis ? '✅' : '❌');
       console.log('- SpeechRecognition:', 'SpeechRecognition' in window ? '✅' : '❌');
       console.log('- webkitSpeechRecognition:', 'webkitSpeechRecognition' in window ? '✅' : '❌');
       
-      if ('speechSynthesis' in window) {
+      if (speechSynthesis) {
         toast.success('🔊 Speech system ready!');
       } else {
         toast.error('❌ Speech not supported in this browser');
       }
     }
+  }, []);
+
+  useEffect(() => {
 
     // Initialize speech recognition
     if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
@@ -405,30 +426,15 @@ export default function MedicationReminder() {
     setShowVisualVerification(true);
   };
 
-  const handleVisualVerificationComplete = (verified: boolean, method: string) => {
-    console.log('📷 Visual verification completed:', { verified, method, medication: selectedMedication?.name });
+  const handleVisualVerificationComplete = (verified: boolean) => {
+    console.log('📷 Visual verification completed:', { verified, medication: selectedMedication?.name });
     
     if (verified && selectedMedication) {
       // Mark medication as taken
       markMedicationTaken(selectedMedication.id);
       
-      // Provide feedback based on verification method
-      let message = '';
-      switch (method) {
-        case 'visual_ai':
-          message = `✅ ${selectedMedication.name} verified using AI! Great job!`;
-          break;
-        case 'hand_to_mouth_tracking':
-          message = `✅ ${selectedMedication.name} verified by hand-to-mouth motion! Well done!`;
-          break;
-        case 'manual_override':
-          message = `✅ ${selectedMedication.name} manually confirmed!`;
-          break;
-        default:
-          message = `✅ ${selectedMedication.name} verified and marked as taken!`;
-      }
-      
-      toast.success(message);
+      const message = `🎉 ${selectedMedication.name} successfully consumed! AI verification complete.`;
+      toast.success(message, { duration: 5000 });
       
       // Positive reinforcement speech
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -446,13 +452,18 @@ export default function MedicationReminder() {
         utterance.volume = 0.8;
         speechSynthesis.speak(utterance);
       }
+      
+      // Delay closing the modal to show success message
+      setTimeout(() => {
+        setShowVisualVerification(false);
+        setSelectedMedication(null);
+      }, 4000); // Wait 4 seconds to show success overlay
     } else {
       toast.error('Verification cancelled. Please try again when ready.');
+      // Close immediately if cancelled
+      setShowVisualVerification(false);
+      setSelectedMedication(null);
     }
-    
-    // Reset states
-    setShowVisualVerification(false);
-    setSelectedMedication(null);
   };
 
   const testSpeech = () => {
@@ -650,19 +661,7 @@ export default function MedicationReminder() {
         ))
       )}
 
-      {/* Browser Support Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 text-sm">
-        <div className="flex items-center gap-2 text-blue-700 mb-2">
-          <span className="font-medium">🌐 Browser Support:</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2 text-xs">
-          <div>Speech Synthesis: {typeof window !== 'undefined' && 'speechSynthesis' in window ? '✅ Ready' : '❌ Not supported'}</div>
-          <div>Voice Recognition: {typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) ? '✅ Ready' : '❌ Not supported'}</div>
-        </div>
-        <p className="text-xs text-blue-600 mt-2">
-          💡 For best results: Use Chrome/Edge browser, ensure volume is up, allow microphone permissions
-        </p>
-      </div>
+
 
       {isListening && (
         <div className="bg-green-100 border-2 border-green-300 rounded-lg p-4 text-center">
@@ -677,8 +676,8 @@ export default function MedicationReminder() {
       {/* Visual Verification Modal */}
       {showVisualVerification && selectedMedication && (
         <VisualVerification
+          isOpen={showVisualVerification}
           medicationName={selectedMedication.name}
-          expectedPillCount={1}
           onVerificationComplete={handleVisualVerificationComplete}
           onClose={() => {
             setShowVisualVerification(false);

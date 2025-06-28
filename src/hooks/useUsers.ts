@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase, DatabaseUser } from '@/lib/supabase';
+import { supabase, DatabaseUser, testDatabaseConnection } from '@/lib/supabase';
 import toast from 'react-hot-toast';
 
 interface User {
@@ -29,6 +29,14 @@ export function useUsers() {
     try {
       console.log('🔄 Fetching senior patients...');
       
+      // Test database connection first
+      const isConnected = await testDatabaseConnection();
+      if (!isConnected) {
+        toast.error('❌ Database connection failed. Check console for details.');
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await supabase
         .from('senior_profiles')
         .select('*')
@@ -36,7 +44,14 @@ export function useUsers() {
 
       if (error) {
         console.error('❌ Error fetching senior profiles:', error);
-        toast.error('Failed to load senior patients');
+        
+        if (error.code === 'PGRST116') {
+          toast.error('🔒 Database access blocked by Row Level Security. Please check Supabase dashboard.');
+          console.warn('🔧 Quick fix: Go to Supabase Dashboard → Authentication → RLS and disable RLS for senior_profiles table');
+        } else {
+          toast.error('Failed to load senior patients');
+        }
+        setLoading(false);
         return;
       }
 
@@ -49,6 +64,8 @@ export function useUsers() {
         setCurrentUser(convertedUsers[0]);
         console.log('👤 Auto-selected first user:', convertedUsers[0].name);
         toast.success(`Selected patient: ${convertedUsers[0].name}`);
+      } else if (convertedUsers.length === 0) {
+        toast('⚠️ No patients found in database. Please add some senior profiles.');
       }
       
     } catch (error) {

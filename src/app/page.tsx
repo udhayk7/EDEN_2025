@@ -8,10 +8,13 @@ import VoiceAssistant from '@/components/VoiceAssistant';
 import EmergencyAlert from '@/components/EmergencyAlert';
 
 export default function SeniorApp() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
   const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
+    // Set initial time after mount to prevent hydration mismatch
+    setCurrentTime(new Date());
+    
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -26,24 +29,24 @@ export default function SeniorApp() {
       <header className="text-center mb-8">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Heart className="w-12 h-12 text-red-500" />
-          <h1 className="text-4xl font-bold text-gray-800">Health Companion</h1>
+          <h1 className="text-4xl font-bold text-gray-800">CareLoop</h1>
         </div>
         <div className="bg-white rounded-xl p-4 shadow-lg">
           <div className="flex items-center justify-center gap-2 text-2xl font-semibold text-gray-700">
             <Clock className="w-6 h-6" />
-            {currentTime.toLocaleTimeString([], { 
+            {currentTime ? currentTime.toLocaleTimeString([], { 
               hour: '2-digit', 
               minute: '2-digit',
               hour12: true 
-            })}
+            }) : '--:--'}
           </div>
           <p className="text-lg text-gray-600 mt-1">
-            {currentTime.toLocaleDateString([], { 
+            {currentTime ? currentTime.toLocaleDateString([], { 
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric'
-            })}
+            }) : 'Loading...'}
           </p>
         </div>
       </header>
