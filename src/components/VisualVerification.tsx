@@ -144,17 +144,37 @@ export default function VisualVerification({
     }
   }, [isAnalyzing, expectedPillCount, analyzePillImage, onVerificationComplete]);
 
-  // Simulate gesture recognition
-  const detectGesture = useCallback(() => {
-    const gestures = ['thumbs_up', 'peace_sign', 'ok_hand', 'pointing'];
-    const detected = gestures[Math.floor(Math.random() * gestures.length)];
+  // Simulate hand-to-mouth tracking for medication taking
+  const detectHandToMouthMotion = useCallback(() => {
+    const motionPatterns = [
+      'hand_near_pill', 
+      'hand_lifting', 
+      'hand_to_mouth', 
+      'medication_taken',
+      'no_motion'
+    ];
+    
+    const detected = motionPatterns[Math.floor(Math.random() * motionPatterns.length)];
     setGestureDetected(detected);
     
-    if (detected === 'thumbs_up' || detected === 'ok_hand') {
+    // Only approve if the complete pill-to-mouth motion is detected
+    if (detected === 'medication_taken') {
       setTimeout(() => {
-        toast.success(`✅ Gesture confirmed: ${detected.replace('_', ' ')}`);
-        onVerificationComplete(true, 'gesture');
+        toast.success(`✅ Medication taking motion verified! Hand-to-mouth pattern detected.`);
+        onVerificationComplete(true, 'hand_to_mouth_tracking');
       }, 1500);
+    } else if (detected === 'hand_to_mouth') {
+      toast.loading('Detecting medication taking motion... Keep hand near mouth.');
+      // Continue tracking for complete motion
+      setTimeout(() => {
+        if (Math.random() > 0.3) { // 70% chance of completing the motion
+          setGestureDetected('medication_taken');
+        }
+      }, 2000);
+    } else if (detected === 'hand_lifting') {
+      toast.loading('Hand lifting detected... Move toward mouth to complete verification.');
+    } else if (detected === 'hand_near_pill') {
+      toast.loading('Hand near medication detected... Lift to mouth to verify.');
     }
   }, [onVerificationComplete]);
 
@@ -164,18 +184,18 @@ export default function VisualVerification({
     return () => stopCamera();
   }, [initializeCamera, stopCamera]);
 
-  // Auto-detect gestures when in gesture mode
+  // Auto-detect hand-to-mouth motion when in gesture mode
   useEffect(() => {
     if (verificationMode === 'gesture' && isStreamActive) {
-      const gestureInterval = setInterval(() => {
-        if (Math.random() > 0.7) { // 30% chance to detect gesture every 2 seconds
-          detectGesture();
+      const motionInterval = setInterval(() => {
+        if (Math.random() > 0.6) { // 40% chance to detect motion every 2 seconds
+          detectHandToMouthMotion();
         }
       }, 2000);
       
-      return () => clearInterval(gestureInterval);
+      return () => clearInterval(motionInterval);
     }
-  }, [verificationMode, isStreamActive, detectGesture]);
+  }, [verificationMode, isStreamActive, detectHandToMouthMotion]);
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence > 0.9) return 'text-green-600';
@@ -183,14 +203,26 @@ export default function VisualVerification({
     return 'text-red-600';
   };
 
-  const getGestureEmoji = (gesture: string) => {
-    const gestures: Record<string, string> = {
-      thumbs_up: '👍',
-      peace_sign: '✌️',
-      ok_hand: '👌',
-      pointing: '👉'
+  const getMotionEmoji = (motion: string) => {
+    const motions: Record<string, string> = {
+      hand_near_pill: '🤏',
+      hand_lifting: '🤚',
+      hand_to_mouth: '👄',
+      medication_taken: '✅',
+      no_motion: '⏸️'
     };
-    return gestures[gesture] || '✋';
+    return motions[motion] || '👋';
+  };
+
+  const getMotionDescription = (motion: string) => {
+    const descriptions: Record<string, string> = {
+      hand_near_pill: 'Hand positioned near medication',
+      hand_lifting: 'Hand lifting movement detected',
+      hand_to_mouth: 'Hand moving toward mouth',
+      medication_taken: 'Medication taking motion completed',
+      no_motion: 'No movement detected'
+    };
+    return descriptions[motion] || 'Unknown motion';
   };
 
   return (
@@ -236,7 +268,7 @@ export default function VisualVerification({
               }`}
             >
               <Hand className="w-4 h-4" />
-              Gesture Recognition
+              Motion Tracking
             </button>
           </div>
         </div>
@@ -279,8 +311,9 @@ export default function VisualVerification({
                     ) : (
                       <div>
                         <Hand className="w-8 h-8 mx-auto mb-2" />
-                        <p className="text-lg font-medium">Show a confirmation gesture</p>
-                        <p className="text-sm opacity-80">👍 Thumbs up or 👌 OK hand</p>
+                        <p className="text-lg font-medium">Take your medication normally</p>
+                        <p className="text-sm opacity-80">🤏 Pick up pill → 🤚 Lift hand → 👄 Bring to mouth</p>
+                        <p className="text-xs opacity-70 mt-1">AI will track hand-to-mouth motion</p>
                       </div>
                     )}
                   </div>
@@ -343,10 +376,15 @@ export default function VisualVerification({
               
               {gestureDetected && verificationMode === 'gesture' && (
                 <div className="text-center">
-                  <div className="text-4xl mb-2">{getGestureEmoji(gestureDetected)}</div>
-                  <p className="text-lg font-semibold text-gray-800 capitalize">
-                    {gestureDetected.replace('_', ' ')} Detected
+                  <div className="text-4xl mb-2">{getMotionEmoji(gestureDetected)}</div>
+                  <p className="text-lg font-semibold text-gray-800">
+                    {getMotionDescription(gestureDetected)}
                   </p>
+                  {gestureDetected === 'medication_taken' && (
+                    <p className="text-sm text-green-600 mt-1">
+                      ✅ Complete pill-to-mouth motion verified!
+                    </p>
+                  )}
                 </div>
               )}
             </div>

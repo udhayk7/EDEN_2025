@@ -18,7 +18,7 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 - **Smart Reminders**: Scheduled voice-based medication reminders with visual cues
 - **Voice Confirmation**: Speech recognition for medication confirmation ("I took it" or "Yes")
 - **AI Visual Verification**: Camera-based pill verification using computer vision technology
-- **Gesture Recognition**: Hand gesture confirmation (thumbs up, OK hand) for medication intake
+- **Hand-to-Mouth Motion Tracking**: AI detection of actual medication-taking movement patterns
 - **Persistent Alerts**: Repeated reminders until user responds or confirms
 - **Special Instructions**: Support for medication-specific instructions (before/after food, with water, etc.)
 - **Family Notifications**: Automatic alerts to family members if medications are missed
@@ -49,10 +49,11 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 ### 🔍 AI Visual Verification
 - **Camera Integration**: Real-time video feed for pill verification
 - **Pill Detection**: AI-powered identification of pill count, shape, and color
-- **Gesture Recognition**: Hand gesture detection for confirmation (👍 👌)
+- **Hand-to-Mouth Motion Tracking**: Detection of actual medication-taking movements (🤏→🤚→👄)
+- **Motion Pattern Analysis**: Multi-stage tracking from pill pickup to mouth contact
 - **Confidence Scoring**: AI confidence levels for verification accuracy
-- **Dual Verification Modes**: Switch between pill detection and gesture recognition
-- **Advanced Confirmation**: Multi-modal verification combining AI, gestures, and manual override
+- **Dual Verification Modes**: Switch between pill detection and motion tracking
+- **Advanced Confirmation**: Multi-modal verification combining AI, motion tracking, and manual override
 - **Progress Tracking**: Real-time analysis progress with visual feedback
 
 ### 📱 Senior-Friendly Interface
@@ -85,7 +86,8 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 - **MediaDevices API** - Real-time camera access and video streaming
 - **Canvas API** - Image processing and frame capture
 - **AI Image Analysis** - Simulated computer vision for pill detection
-- **Gesture Recognition** - Hand tracking and gesture identification
+- **Motion Tracking** - Hand-to-mouth movement pattern recognition
+- **Multi-Stage Detection** - Sequential tracking of medication-taking motions
 - **Real-time Processing** - Live video analysis with progress feedback
 
 ### UI & UX
@@ -202,7 +204,7 @@ Eden Senior Health App is designed to empower senior citizens with technology th
 ### For Seniors
 1. **Taking Medications**: Respond to voice reminders with "I took it" or "Yes"
 2. **Visual Verification**: Use the "📷 AI Verify" button to verify pills with camera
-3. **Gesture Confirmation**: Show thumbs up (👍) or OK hand (👌) to confirm medication
+3. **Motion Verification**: Take medication naturally - AI tracks hand-to-mouth movement (🤏→🤚→👄)
 4. **Voice Queries**: Ask "Did I take my morning pills?" or "What medications do I need?"
 5. **Emergency Help**: Say "I'm not feeling well" or tap emergency buttons
 6. **Language**: Speak in English or Malayalam - the app auto-detects

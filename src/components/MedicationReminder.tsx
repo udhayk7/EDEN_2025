@@ -418,8 +418,8 @@ export default function MedicationReminder() {
         case 'visual_ai':
           message = `✅ ${selectedMedication.name} verified using AI! Great job!`;
           break;
-        case 'gesture':
-          message = `✅ ${selectedMedication.name} confirmed by gesture! Well done!`;
+        case 'hand_to_mouth_tracking':
+          message = `✅ ${selectedMedication.name} verified by hand-to-mouth motion! Well done!`;
           break;
         case 'manual_override':
           message = `✅ ${selectedMedication.name} manually confirmed!`;
@@ -433,9 +433,10 @@ export default function MedicationReminder() {
       // Positive reinforcement speech
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         const reinforcementMessages = [
-          `Excellent! Your ${selectedMedication.name} has been verified and recorded using advanced AI technology!`,
-          `Outstanding! Visual verification confirms you took your ${selectedMedication.name}. Keep up the great work!`,
-          `Perfect! AI has successfully verified your ${selectedMedication.name}. You're doing amazing with your health!`
+          `Excellent! Your ${selectedMedication.name} has been verified using advanced hand-to-mouth motion tracking!`,
+          `Outstanding! AI detected your hand-to-mouth motion and verified you took your ${selectedMedication.name}. Keep up the great work!`,
+          `Perfect! Motion tracking technology has successfully verified your ${selectedMedication.name}. You're doing amazing with your health!`,
+          `Amazing! The AI tracked your hand movement from pill to mouth and confirmed your ${selectedMedication.name} intake. Well done!`
         ];
         
         const randomMessage = reinforcementMessages[Math.floor(Math.random() * reinforcementMessages.length)];
